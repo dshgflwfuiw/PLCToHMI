@@ -14,7 +14,7 @@
         Background="#F5F5FA"
         FontFamily="Microsoft YaHei UI"
         FontSize="14">
-    
+
     <!-- 
         资源字典：定义可重用的样式和模板
         在这里定义的样式可以在整个窗口中重复使用
@@ -30,7 +30,7 @@
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Cursor" Value="Hand"/>
-            
+
             <!-- 自定义按钮模板：完全控制按钮的外观 -->
             <Setter Property="Template">
                 <Setter.Value>
@@ -51,7 +51,7 @@
                             <ContentPresenter HorizontalAlignment="Center"
                                             VerticalAlignment="Center"/>
                         </Border>
-                        
+
                         <!-- 触发器：定义按钮在不同状态下的外观 -->
                         <ControlTemplate.Triggers>
                             <!-- 当鼠标悬停在按钮上时，背景变深蓝色 -->
@@ -77,7 +77,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <!-- 定义卡片样式，命名为 CardStyle -->
         <Style TargetType="Border" x:Key="CardStyle">
             <Setter Property="Background" Value="White"/>
@@ -91,7 +91,7 @@
             </Setter>
         </Style>
     </Window.Resources>
-    
+
     <!-- 
         Grid：网格布局容器，将窗口分为多行多列
         Margin="20" 表示四周各留20像素的间距
@@ -99,57 +99,60 @@
     <Grid Margin="20">
         <!-- 定义两行 -->
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>    <!-- 第一行：高度自动适应内容 -->
-            <RowDefinition Height="*"/>       <!-- 第二行：占据剩余所有空间 -->
+            <RowDefinition Height="223.49"/>
+            <RowDefinition Height="232.55"/>
+            <!-- 第一行：高度自动适应内容 -->
+            <RowDefinition Height="*"/>
+            <!-- 第二行：占据剩余所有空间 -->
         </Grid.RowDefinitions>
-        
+
         <!-- 第一行：主操作区域卡片，使用卡片样式，底部留20像素间距 -->
-        <Border Grid.Row="0" Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+        <Border Grid.Row="0" Style="{StaticResource CardStyle}" Margin="0,0,0,20" Grid.RowSpan="2">
             <!-- StackPanel：堆叠面板，子控件垂直排列 -->
             <StackPanel>
-                 <!-- 标题文本：大号粗体，深灰色，水平居中 -->
-                 <TextBlock Text="PLC变量转HMI工具"
+                <!-- 标题文本：大号粗体，深灰色，水平居中 -->
+                <TextBlock Text="PLC变量转HMI工具"
                             FontSize="24"
                             FontWeight="Bold"
                             Foreground="#2C3E50"
                             HorizontalAlignment="Center"
                             Margin="0,0,0,10"/>
-                 <!-- 副标题文本：中灰色，水平居中 -->
-                 <TextBlock Text="快速转换PLC变量CSV文件为HMI兼容格式"
+                <!-- 副标题文本：中灰色，水平居中 -->
+                <TextBlock Text="快速转换PLC变量CSV文件为HMI兼容格式"
                             FontSize="14"
                             Foreground="#7F8C8D"
                             HorizontalAlignment="Center"
                             Margin="0,0,0,15"/>
-                 <!-- 使用帮助：折叠面板，提供简要使用说明 -->
-                 <Expander Header="使用帮助" IsExpanded="False" Margin="0,0,0,15" HorizontalAlignment="Center" Width="760">
+                <!-- 使用帮助：折叠面板，提供简要使用说明 -->
+                <Expander Header="使用帮助" IsExpanded="False" Margin="0,0,0,15" HorizontalAlignment="Center" Width="760">
                     <StackPanel Margin="8">
                         <TextBlock Text="操作步骤：" FontWeight="SemiBold"/>
-                         <TextBlock Text="1. 选择PLC品牌； 2. 拖拽或点击“选择文件开始转换”选择一个或多个CSV文件； 3. 程序会在源文件目录生成合并后的输出文件。" TextWrapping="Wrap" Margin="0,4,0,6"/>
-                         <TextBlock Text="注意：" FontWeight="SemiBold"/>
+                        <TextBlock Text="1. 选择PLC品牌； 2. 拖拽或点击“选择文件开始转换”选择一个或多个CSV文件； 3. 程序会在源文件目录生成合并后的输出文件。" TextWrapping="Wrap" Margin="0,4,0,6"/>
+                        <TextBlock Text="注意：" FontWeight="SemiBold"/>
                         <TextBlock Text="本项目只适用于威纶通触摸屏,其他品牌概不支持。" TextWrapping="Wrap" Margin="0,6,0,0"/>
                         <TextBlock Text="支持品牌：松下、三菱、信捷、台达、基恩士、汇川。输出文件以 _Merged_品牌_HMI变量.csv 命名。若出现编码问题，请确保CSV为 UTF-8 或 GBK。" TextWrapping="Wrap"/>
                     </StackPanel>
-                 </Expander>
-                 
-                 <!-- PLC品牌选择 -->
-                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
-                     <TextBlock Text="选择PLC品牌："
+                </Expander>
+
+                <!-- PLC品牌选择 -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+                    <TextBlock Text="选择PLC品牌："
                                 FontSize="14"
                                 Foreground="#2C3E50"
                                 VerticalAlignment="Center"/>
-                     <ComboBox Name="cmbPlcBrand"
+                    <ComboBox Name="cmbPlcBrand"
                                Width="220"
                                Margin="10,0,0,0"
                                FontSize="14">
-                         <ComboBoxItem Content="松下" Tag="Panasonic" IsSelected="True"/>
-                         <ComboBoxItem Content="三菱" Tag="Mitsubishi"/>
-                         <ComboBoxItem Content="信捷" Tag="Xinjie"/>
-                         <ComboBoxItem Content="台达" Tag="Delta"/>
-                         <ComboBoxItem Content="基恩士" Tag="Keyence"/>
-                         <ComboBoxItem Content="汇川" Tag="Huichuan"/>
-                     </ComboBox>
-                 </StackPanel>
-                
+                        <ComboBoxItem Content="松下" Tag="Panasonic" IsSelected="True"/>
+                        <ComboBoxItem Content="三菱" Tag="Mitsubishi"/>
+                        <ComboBoxItem Content="信捷" Tag="Xinjie"/>
+                        <ComboBoxItem Content="台达" Tag="Delta"/>
+                        <ComboBoxItem Content="基恩士" Tag="Keyence"/>
+                        <ComboBoxItem Content="汇川" Tag="Huichuan"/>
+                    </ComboBox>
+                </StackPanel>
+
                 <!-- 
                     拖放区域边框：
                     - AllowDrop="True" 允许拖放文件
@@ -188,16 +191,18 @@
                 </Border>
             </StackPanel>
         </Border>
-        
+
         <!-- 第二行：日志区域卡片 -->
-        <Border Grid.Row="1" Style="{StaticResource CardStyle}" Margin="0,10,0,0">
+        <Border Grid.Row="2" Style="{StaticResource CardStyle}" Margin="0,10,0,0">
             <Grid>
                 <!-- 定义两行：标题栏和日志内容区 -->
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>    <!-- 标题栏 -->
-                    <RowDefinition Height="*"/>       <!-- 日志内容 -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- 标题栏 -->
+                    <RowDefinition Height="*"/>
+                    <!-- 日志内容 -->
                 </Grid.RowDefinitions>
-                
+
                 <!-- 标题栏：包含标题和清除按钮 -->
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
                     <!-- 日志标题 -->
@@ -242,15 +247,15 @@
                         </Button.Style>
                     </Button>
                 </StackPanel>
-                
+
                 <!-- 日志文本区域：浅灰背景，圆角 -->
                 <Border Grid.Row="1"
                         Background="#F8F9FA"
                         CornerRadius="8"
                         Padding="15">
                     <!-- ScrollViewer：滚动视图容器，需要时显示滚动条 -->
-                        <!-- TextBox：用于高性能日志输出，支持自动滚动和大文本量 -->
-                        <TextBox Name="logText"
+                    <!-- TextBox：用于高性能日志输出，支持自动滚动和大文本量 -->
+                    <TextBox Name="logText"
                                  IsReadOnly="True"
                                  AcceptsReturn="True"
                                  TextWrapping="Wrap"

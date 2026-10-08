@@ -28,24 +28,28 @@ namespace PlcToHmi
             // InitializeComponent 是自动生成的方法，负责加载 XAML 界面
             InitializeComponent();
             
-            // 尝试设置窗口图标
-            try
+            // 在设计器中避免执行运行时仅用的代码，防止设计器崩溃
+            if (!System.ComponentModel.DesignerProperties.GetIsInDesignMode(this))
             {
-                // 从嵌入的资源中加载图标
-                var stream = Application.GetResourceStream(new Uri("pack://application:,,,/favicon.ico"));
-                if (stream != null && stream.Stream != null)
+                // 尝试设置窗口图标
+                try
                 {
-                    var bitmap = new System.Windows.Media.Imaging.BitmapImage();
-                    bitmap.BeginInit();
-                    bitmap.StreamSource = stream.Stream;
-                    bitmap.EndInit();
-                    Icon = bitmap;
+                    // 从嵌入的资源中加载图标
+                    var stream = Application.GetResourceStream(new Uri("pack://application:,,,/favicon.ico"));
+                    if (stream != null && stream.Stream != null)
+                    {
+                        var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.StreamSource = stream.Stream;
+                        bitmap.EndInit();
+                        Icon = bitmap;
+                    }
                 }
+                catch { }
+
+                // 注册编码提供器，支持中文编码（GBK等）
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             }
-            catch { }
-            
-            // 注册编码提供器，支持中文编码（GBK等）
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         }
 
         // 自定义日志输出方法：向界面的日志区域添加带颜色的文本

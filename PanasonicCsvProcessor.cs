@@ -30,6 +30,7 @@ public class PanasonicCsvProcessor : PlcCsvProcessorBase
         { "DWL", "WL" },  // 32位数据链接字
         { "FL", "FL" },   // 16位数据标志位
         { "DFL", "FL" },  // 32位数据标志位
+        { "L", "L_Bit" }, // 位地址 L -> L_Bit
         { "DT", "DT" },   // 16位数据定时器
         { "DDT", "DT" }   // 32位数据定时器
     };
