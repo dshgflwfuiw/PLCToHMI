@@ -1,202 +1,125 @@
 ﻿# PLC变量转HMI工具
 
-一个用于将主流品牌PLC的CSV变量文件转换为HMI（威纶通）标签通信可用格式的WPF桌面应用程序。
+一个用于将主流品牌 PLC 的 CSV 变量文件转换为威纶通（Weintek EasyBuilder Pro）HMI 标签通信可用格式的 WPF 桌面应用程序。
 
-## 功能特性
+---
 
-- **多品牌支持**: 松下（Panasonic FP/KW）、三菱（Mitsubishi）、台达（Delta DVP）、汇川（Inovance H3U/H5U）、基恩士（Keyence KV）、信捷（Xinjie）
-- **一键转换**: 支持文件选择对话框或直接拖拽CSV文件
-- **智能编码检测**: 自动识别GBK、GB2312、UTF-8等多种编码格式
-- **变量前缀映射**: 自动将PLC变量前缀转换为HMI识别符号
-- **16位/32位支持**: 自动识别并处理16位和32位数据类型
-- **实时日志**: 带颜色编码的日志输出，便于调试和问题排查
-- **异步处理**: 后台线程处理文件转换，保持界面响应流畅
+## 核心特性
+
+- **多品牌工业支持**: 覆盖国内工业现场主流 7 大品牌：
+  - 松下（Panasonic FP/KW 系列）
+  - 三菱（Mitsubishi FX / Q / L 系列）
+  - **西门子（Siemens S7-200 SMART / S7-1200 / S7-1500 DB 块）[新增]**
+  - 汇川（Inovance H3U AutoShop / H5U InoProShop Codesys 格式）
+  - 基恩士（Keyence KV 系列）
+  - 台达（Delta DVP 系列）
+  - 信捷（Xinjie XD / XC 系列）
+- **工业级标准 CSV 解析**: 底层基于 `CsvHelper`，完全符合 RFC 4180 标准。变量名称或说明中包含逗号、分号、双引号等特殊字符时绝不发生列错位。
+- **智能编码与 BOM 探测**: 优先识别 UTF-8 BOM，自动兼容 GB18030、GBK、GB2312、UTF-8、Big5 等中文及多语言编码，杜绝乱码。
+- **标准威纶通类型映射**: 自动将 PLC 的原始类型标准化映射为 EasyBuilder Pro 规范数据类型（`Bit`、`16-bit Signed`、`32-bit Float` 等）。
+- **标签唯一性防冲突**: 威纶通严禁同名标签。当单文件或多文件合并出现重复变量名时，系统自动添加序号重命名（如 `Var_1`）并提示警告，避免 HMI 导入报错。
+- **32位双字空间重叠诊断**: 智能识别 32 位双字（如 D0 双字占 D0/D1 空间），若后续有变量使用冲突地址，日志提供温和诊断预警。
+- **便捷交互与可视化体验**: 
+  - **标签预览表格（DataGrid）**：转换完成后直接在选项卡中清晰展示前 20 条 HMI 标签（名称、品牌、起始符号、起始地址、数据类型），直观核验无需频繁切换 Excel；
+  - **转换统计仪表盘**：直观展示源文件数、有效标签行数、消除重名数、诊断预警数 4 项关键指标徽标；
+  - **动态平滑进度条**：支持大文件或多文件合并时的百分比与状态文本动态反馈；
+  - 支持文件选择对话框与批量拖拽；
+  - 智能命名输出文件（单文件不带 `_Merged_`，多文件自动标识 `_Merged_`）；
+  - 转换完成后支持一键【打开输出目录】与【查看生成文件】；
+  - 支持日志一键复制与清空。
+- **自动化测试保障**: 内置 34 项核心用例测试套件，支持在命令行通过 `--test` 一键无头执行回归测试。
+
+---
 
 ## 系统要求
 
-- **操作系统**: Windows 10/11
-- **运行时**: .NET 9.0（使用自包含发布版本则无需安装）
+- **操作系统**: Windows 10 / 11
+- **运行时**: .NET 9.0（若使用自包含单文件发布版本则无需在电脑上预装运行时）
+
+---
 
 ## 使用方法
 
-1. 在"选择PLC品牌"下拉框中选择对应的PLC品牌
-2. 点击"选择文件开始转换"按钮（或将CSV文件直接拖拽到窗口）
-3. 等待转换完成，HMI格式文件将自动保存到源文件同目录下
+1. 在下拉框中选择对应的 **PLC 品牌**；
+2. 点击 **【选择文件开始转换】** 按钮（或直接将一个或多个 CSV 文件拖拽至虚线框内）；
+3. 程序自动完成解析、去重、类型映射并输出到源文件同级目录；
+4. 转换成功后，可直接点击 **【打开输出目录】** 或 **【查看生成文件】**。
 
 ### 输出文件命名规则
-`原文件名_品牌_HMI变量.csv`
+- 单文件转换：`原文件名_品牌名_HMI变量.csv`
+- 多文件合并：`第一文件原名_Merged_品牌名_HMI变量.csv`
 
-## 支持品牌
+---
 
-| 品牌 | 处理器 | 地址格式 |
-|------|--------|----------|
-| 松下 FP/KW | PanasonicCsvProcessor | 十六进制 |
-| 三菱 | MitsubishiCsvProcessor | 十进制 |
-| 台达 DVP | DeltaCsvProcessor | 十进制 |
-| 汇川 H3U/H5U | HuichuanCsvProcessor | 十进制 |
-| 基恩士 KV | KeyenceCsvProcessor | 十进制 |
-| 信捷 | XinjieCsvProcessor | 十进制 |
+## 支持品牌与寄存器覆盖
 
-## 支持的变量类型
+| 品牌 | 处理器 | 支持的主要寄存器 / 寻址格式 |
+|------|--------|--------------------------|
+| 松下 FP/KW | PanasonicCsvProcessor | R、X、Y、WR、DWR、SV、DSV、EV、DEV、LD、DLD、WX、WY、WL、FL、DT、DDT 等 |
+| 三菱 FX/Q | MitsubishiCsvProcessor | X、Y、M、L、S、B（Q系列十六进制）、SM、D、DD（32位）、SD、W、Z、R、TS/TC/TN、CS/CC/CN 等 |
+| 西门子 S7-200/1200 | SiemensCsvProcessor | V（V_Bit）、VB、VW、VD、M、MB、MW、MD、I、Q、SM、T、C、AIW、AQW，以及 S7-1200 DB 块（DB1.DBD0、DB2.DBX0.0） |
+| 汇川 H3U/H5U | HuichuanCsvProcessor | 传统 AutoShop（D/DD/M/X/Y/SD/Z/R）以及 InoProShop Codesys 格式（%MW、%MD、%MX、%IX、%QX） |
+| 基恩士 KV | KeyenceCsvProcessor | X、Y、R、MR（内部辅助）、M、LR、CR、VB、VM、T/TN、C/CN、D、DM、EM、FM |
+| 台达 DVP | DeltaCsvProcessor | X、Y（八进制）、M、S、T、C、D、DD 等 |
+| 信捷 XD/XC | XinjieCsvProcessor | M、D、X、Y、C、CD、T、TD、HM、HD、HCD、HTD，扩展区（X/Y >= 10000 自动映射为 X/Y_Extension） |
 
-### 松下 (Panasonic FP/KW)
+---
 
-| PLC前缀 | HMI符号 | 说明 |
-|---------|---------|------|
-| WR/DWR | WR | 16位/32位数据寄存器 |
-| SV/DSV | SV | 16位/32位数据保持寄存器 |
-| EV/DEV | EV | 16位/32位数据事件寄存器 |
-| LD/DLD | LD | 16位/32位数据链接寄存器 |
-| WX/DWX | WX | 16位/32位数据输入字 |
-| WY/DWY | WY | 16位/32位数据输出字 |
-| WL/DWL | WL | 16位/32位数据链接字 |
-| FL/DFL | FL | 16位/32位数据标志位 |
-| DT/DDT | DT | 16位/32位数据定时器 |
+## 威纶通（EasyBuilder Pro）标准数据类型映射表
 
-### 三菱 (Mitsubishi)
+| PLC 原始数据类型 | 转换后的威纶通数据类型 | 说明 |
+|------------------|----------------------|------|
+| `BOOL`, `BIT` | `Bit` | 位触点 / 开关量 |
+| `INT`, `INT16`, `SHORT` | `16-bit Signed` | 16 位有符号整型 |
+| `UINT`, `UINT16`, `WORD`, `BYTE` | `16-bit Unsigned` | 16 位无符号整型 / 字 |
+| `DINT`, `INT32`, `LONG` | `32-bit Signed` | 32 位有符号整型 |
+| `UDINT`, `UINT32`, `DWORD` | `32-bit Unsigned` | 32 位无符号整型 / 双字 |
+| `REAL`, `FLOAT`, `SINGLE` | `32-bit Float` | 32 位单精度浮点数 |
+| `LREAL`, `DOUBLE` | `64-bit Float` | 64 位双精度浮点数 |
+| `STRING`, `CHAR` | `String` | ASCII 字符串 |
+| `BCD` | `16-bit BCD` / `32-bit BCD` | BCD 编码 |
 
-| PLC前缀 | HMI符号 | 说明 |
-|---------|---------|------|
-| X | X | 输入继电器 |
-| Y | Y | 输出继电器 |
-| M | M | 内部辅助继电器 |
-| L | L | 锁存继电器 |
-| S | S | 状态继电器 |
-| SM | SM | 特殊辅助继电器 |
-| B | B | 链接继电器 |
-| D0 | D0 | 16位数据寄存器 |
-| DD0 | D0 | 32位数据寄存器 |
-| SD | SD | 16位特殊数据寄存器 |
-| R | R | 文件寄存器 |
-| T | T | 定时器 |
-| C | C | 计数器 |
-
-### 台达 (Delta DVP)
-
-| PLC前缀 | HMI符号 | 说明 |
-|---------|---------|------|
-| X | X | 输入继电器 |
-| Y | Y | 输出继电器 |
-| M | M | 内部辅助继电器 |
-| S | S | 步进继电器 |
-| T | T | 定时器 |
-| C | C | 计数器 |
-| D | D | 数据寄存器 |
-| D0 | D0 | 16位数据寄存器 |
-
-### 汇川 (Inovance H3U/H5U)
-
-| PLC前缀 | HMI符号 | 说明 |
-|---------|---------|------|
-| X | X | 输入继电器 |
-| Y | Y | 输出继电器 |
-| M | M | 辅助继电器 |
-| SM | SM | 特殊辅助继电器 |
-| S | S | 状态继电器 |
-| T | T | 定时器 |
-| C | C | 计数器 |
-| D | D | 数据寄存器 |
-
-### 基恩士 (Keyence KV)
-
-| PLC前缀 | HMI符号 | 说明 |
-|---------|---------|------|
-| X | X | 输入继电器 |
-| Y | Y | 输出继电器 |
-| M | M | 内部辅助继电器 |
-| SM | SM | 特殊辅助继电器 |
-| CT | CT | 计数器 |
-| T | T | 定时器 |
-| DM | DM | 数据存储器 |
-| EM | EM | 扩展数据存储器 |
-| FM | FM | 文件存储器 |
-
-### 信捷 (Xinjie)
-
-| PLC前缀 | HMI符号 | 说明 |
-|---------|---------|------|
-| X | X | 输入继电器 |
-| Y | Y | 输出继电器 |
-| M | M | 辅助继电器 |
-| SM | SM | 特殊辅助继电器 |
-| S | S | 状态继电器 |
-| T | T | 定时器 |
-| C | C | 计数器 |
-| D | D | 数据寄存器 |
-
-## 输入输出格式
-
-### 输入 (PLC CSV)
-```
-列1;变量名称;列3;PLC地址;数据类型;列6
-```
-
-### 输出 (HMI CSV)
-```
-"名称","品牌","起始符号","起始地址","","数据类型"
-```
-
-## 技术栈
-
-- **框架**: .NET 9.0 / WPF
-- **CSV处理**: CsvHelper
-- **架构**: 模板方法模式
-
-## 项目结构
-
-```
-.
-├── Program.cs                  # 程序入口
-├── MainWindow.xaml(.cs)        # 主窗口界面与逻辑
-├── PlcCsvProcessorBase.cs      # 抽象基类（模板方法模式）
-├── PanasonicCsvProcessor.cs    # 松下转换器
-├── MitsubishiCsvProcessor.cs   # 三菱转换器
-├── DeltaCsvProcessor.cs        # 台达转换器
-├── HuichuanCsvProcessor.cs     # 汇川转换器
-├── KeyenceCsvProcessor.cs      # 基恩士转换器
-├── XinjieCsvProcessor.cs       # 信捷转换器
-├── PlcToHmi.csproj             # 项目文件
-├── favicon.ico                 # 应用图标
-└── Properties/
-    └── PublishProfiles/
-        └── FolderProfile.pubxml
-```
+---
 
 ## 架构设计
 
-采用**模板方法模式**，抽象基类定义通用流程，各品牌处理器实现具体细节：
+采用 **模板方法模式 + 简单工厂模式**：
 
-```
-PlcCsvProcessorBase
-  ├── 通用流程：编码检测 → 数据解析 → 格式转换 → 文件写入
+```text
+PlcCsvProcessorBase (抽象基类)
+  ├── 核心流程：BOM/编码探测 → CsvHelper 标准读取 → 字段提取与类型规范化 → RFC 4180 写入
   ├── 抽象属性：BrandName, PrefixMapping, AddressPattern
-  └── 虚拟方法：ParseAddress, ShouldSkipAddress（可重写）
+  └── 扩展钩子：ParseAddress, IsValidHmiRow, ShouldSkipAddress, NormalizeDataType
+  
+PlcCsvProcessorFactory (工厂类)
+  └── 统一管理 7 大 PLC 品牌注册与元信息，消除 UI 层的分支耦合
 
-  ├── PanasonicCsvProcessor — 十六进制地址，松下专用前缀映射
-  ├── MitsubishiCsvProcessor — 十进制地址，三菱专用前缀映射
-  ├── DeltaCsvProcessor
-  ├── HuichuanCsvProcessor
-  ├── KeyenceCsvProcessor
-  └── XinjieCsvProcessor
+PlcConversionService (业务调度服务)
+  └── 协调单/多文件处理、标签同名自动去重序号、32位双字重叠安全预警与统计汇总
 ```
 
-**设计优势**: 消除重复代码；新增PLC品牌只需继承基类实现3个抽象成员；统一错误处理和日志。
+---
 
-## 构建
+## 构建与运行
 
+### 1. 运行 GUI 界面
 ```bash
-dotnet restore
-dotnet build
 dotnet run
 ```
 
-### 发布单文件
+### 2. 运行自动化测试套件
+```bash
+dotnet run -- --test
+```
+
+### 3. 发布单文件免安装版
 ```bash
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
 ```
+输出位于：`bin/Release/net9.0-windows/win-x64/publish/PlcToHmi.exe`
 
-输出位于 `bin/Release/net9.0-windows/win-x64/publish/`
+---
 
 ## 许可证
 
-仅供学习和内部使用。
+仅供学习与工业内部工程使用。

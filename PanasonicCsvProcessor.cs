@@ -1,19 +1,24 @@
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 /// <summary>
-/// 松下PLC CSV处理器
-/// 将松下FP/KW系列PLC变量文件转换为HMI格式
+/// 松下 PLC CSV 处理器
+/// 将松下 FP/KW 系列 PLC 变量文件转换为威纶通 HMI 格式
 /// </summary>
 public class PanasonicCsvProcessor : PlcCsvProcessorBase
 {
-    protected override string BrandName => "Panasonic FP/KW";
-    
+    public override string BrandName => "Panasonic FP/KW";
+
     protected override string AddressPattern => @"([A-Za-z]+)([0-9A-Fa-f]+)";
 
     protected override Dictionary<string, string> PrefixMapping => new(StringComparer.OrdinalIgnoreCase)
     {
+        // 常用位继电器
+        { "R", "R" },     // 内部继电器位 (Hex)
+        { "X", "X" },     // 输入触点位 (Hex)
+        { "Y", "Y" },     // 输出触点位 (Hex)
+        { "L", "L_Bit" }, // 链接继电器位 -> L_Bit
+        // 字/双字寄存器
         { "WR", "WR" },   // 16位数据寄存器
         { "DWR", "WR" },  // 32位数据寄存器
         { "SV", "SV" },   // 16位数据保持寄存器
@@ -30,7 +35,6 @@ public class PanasonicCsvProcessor : PlcCsvProcessorBase
         { "DWL", "WL" },  // 32位数据链接字
         { "FL", "FL" },   // 16位数据标志位
         { "DFL", "FL" },  // 32位数据标志位
-        { "L", "L_Bit" }, // 位地址 L -> L_Bit
         { "DT", "DT" },   // 16位数据定时器
         { "DDT", "DT" }   // 32位数据定时器
     };

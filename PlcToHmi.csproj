@@ -21,12 +21,12 @@
     <ApplicationIcon>favicon.ico</ApplicationIcon>
   </PropertyGroup>
  
-  <!-- 发布配置组：定义如何打包成单个可执行文件 -->
-  <PropertyGroup>
-    <PublishSingleFile>true</PublishSingleFile>                           <!-- 发布为单个文件 -->
-    <SelfContained>true</SelfContained>                                    <!-- 自包含，不依赖本地.NET运行时 -->
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>                         <!-- 目标平台：Windows x64 -->
-    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>  <!-- 包含所有内容 -->
+  <!-- 发布配置组：仅在指定发布单个文件时使用，普通生成不强制 self-contained -->
+  <PropertyGroup Condition="'$(PublishProtocol)' != '' or '$(DeployOnBuild)' == 'true'">
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
   </PropertyGroup>
  
   <!-- 引用的外部包和文件 -->
